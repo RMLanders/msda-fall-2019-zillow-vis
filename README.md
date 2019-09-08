@@ -65,3 +65,5 @@ Open the project in Finder or RStudio to double check.
 Now, there's loads of useful stuff Git provides such as branches and merging files, but as long as we're working on separate files, we shouldn't need them.  However, if we do find that we are making simultaneous changes to one file, then we will absolutely need to learn that.
 
 If you'd like to read more about Git and the neat things it can do, this is a helpful link to get you started: https://www.atlassian.com/git/tutorials/what-is-version-control
+
+The data to be used for the project can be found and downloaded here: https://www.zillow.com/research/data/
