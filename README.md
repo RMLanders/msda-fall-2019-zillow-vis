@@ -5,6 +5,15 @@ To clone this project on your local repo, you will first need to download Git.  
 For Mac, download here: https://git-scm.com/download/mac
 For Windows, download here: https://git-scm.com/download/win
 
+Now, we need to make sure RStudio knows where Git is:
+
+1) If you have Mac, open Terminal.  Type 'which git'.
+   If you have Windows, open the Command Prompt.  Type 'where git'.
+2) Copy whatever value it gives you.
+3) Open RStudio.  Got to Tools -> Global Options -> Git/SVN
+4) Ensure that the checkbox at the top is checked
+5) Where it asks for the Git executable, paste the path you copied earlier
+
 Next, unless you're comfortable with the command line and would rather use that, download a Git GUI.  I'd suggest GitKraken, as that is what I'm using.
 
 Download GitKraken here: https://www.gitkraken.com/download/windows64
@@ -52,3 +61,7 @@ Your local repo should now be up-to-date with the remote repository.
 
 Open the project in Finder or RStudio to double check.  
 
+
+Now, there's loads of useful stuff Git provides such as branches and merging files, but as long as we're working on separate files, we shouldn't need them.  However, if we do find that we are making simultaneous changes to one file, then we will absolutely need to learn that.
+
+If you'd like to read more about Git and the neat things it can do, this is a helpful link to get you started: https://www.atlassian.com/git/tutorials/what-is-version-control
