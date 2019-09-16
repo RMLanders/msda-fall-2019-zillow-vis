@@ -57,16 +57,13 @@ head(change_in_median_val_days_on_zillow_geographic_data)
 ```
 
 ```{r create plot}
-change_vs_current <- ggplot() +
-  geom_polygon(data = usa, aes(x = long, y = lat, group = group)) +
-  coord_fixed()
-  
-  ggplot() +
+  map <- ggplot() +
   geom_polygon(data = usa, aes(x = long, y = lat, group=group)) +
   coord_quickmap() +
   geom_point(data = change_in_median_val_days_on_zillow_geographic_data, 
              aes(x = long, y = lat,
                  color = change_in_median_val,
                  size = last_median_val))
+ggsave('./plots/days_on_zillow.pdf')
 ```
 
