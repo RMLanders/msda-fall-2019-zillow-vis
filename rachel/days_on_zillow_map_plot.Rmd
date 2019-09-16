@@ -1,0 +1,72 @@
+---
+title: "map_plots"
+author: "Rachel Landers"
+date: "9/14/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(lubridate)
+library(zoo)
+library(maps)
+```
+
+```{r read days on zillow data}
+days_on_zillow <- readxl::read_excel("../data/prepped/days_on_zillow.xlsx")
+head(days_on_zillow)
+```
+
+```{r transform data}
+days_on_zillow <- days_on_zillow %>% 
+  transform(date = as.Date(as.yearmon(date)))
+min_days_on_zillow <- days_on_zillow %>% 
+  group_by(RegionName) %>% 
+  top_n(-1, date)
+max_days_on_zillow <- days_on_zillow %>% 
+  group_by(RegionName) %>% 
+  top_n(1, date)
+
+merge_max_min_days_on_zillow <- merge(max_days_on_zillow, min_days_on_zillow,
+                                      by = c("RegionName", "RegionName"))
+colnames(merge_max_min_days_on_zillow)[colnames(merge_max_min_days_on_zillow) == "median_val.x"] <- "last_median_val"
+colnames(merge_max_min_days_on_zillow)[colnames(merge_max_min_days_on_zillow) == "median_val.y"] <- "first_median_val"
+colnames(merge_max_min_days_on_zillow)[colnames(merge_max_min_days_on_zillow) == "date.x"] <- "last_record"
+colnames(merge_max_min_days_on_zillow)[colnames(merge_max_min_days_on_zillow) == "date.y"] <- "first_record"
+merge_max_min_days_on_zillow$SizeRank.x <- NULL
+merge_max_min_days_on_zillow$SizeRank.y <- NULL
+merge_max_min_days_on_zillow$weeks_on_zillow = as.double(difftime(merge_max_min_days_on_zillow$last_record, merge_max_min_days_on_zillow$first_record, units = "weeks"))
+merge_max_min_days_on_zillow$change_in_median_val = merge_max_min_days_on_zillow$last_median_val - merge_max_min_days_on_zillow$first_median_val
+head(merge_max_min_days_on_zillow)
+tail(merge_max_min_days_on_zillow)
+```
+
+```{r read USA data}
+usa <- map_data("usa")
+head(usa)
+us_cities <- us.cities %>% 
+  transform(name = gsub(" ", ", ", name))
+colnames(us_cities)[colnames(us_cities) == "name"] <- "RegionName"
+head(usa)
+```
+
+```{r merge zillow and usa data}
+change_in_median_val_days_on_zillow_geographic_data <- merge(merge_max_min_days_on_zillow, us_cities, by = c("RegionName", "RegionName"))
+head(change_in_median_val_days_on_zillow_geographic_data)
+```
+
+```{r create plot}
+change_vs_current <- ggplot() +
+  geom_polygon(data = usa, aes(x = long, y = lat, group = group)) +
+  coord_fixed()
+  
+  ggplot() +
+  geom_polygon(data = usa, aes(x = long, y = lat, group=group)) +
+  coord_quickmap() +
+  geom_point(data = change_in_median_val_days_on_zillow_geographic_data, 
+             aes(x = long, y = lat,
+                 color = change_in_median_val,
+                 size = last_median_val))
+```
+
