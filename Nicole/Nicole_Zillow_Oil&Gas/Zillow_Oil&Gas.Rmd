@@ -1,0 +1,129 @@
+---
+title: "Zillow_Oil&Gas"
+author: "Nicole Davis-Brown"
+date: "9/15/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(ggplot2)
+library(dplyr)
+library(readxl)
+```
+
+CompData<-read.csv("C:\\Users\\NiDav\\OneDrive\\Desktop\\UTSA\\Humana Competition\\DataSet\\HMAHCC_COMP.csv",header = T, row.names= NULL, stringsAsFactors=FALSE)
+
+
+```{r}
+'PivotDatesToRows_Oil&Gas' <-read.csv("C:\\Users\\NiDav\\OneDrive\\Desktop\\UTSA\\DataVisual&Tech_Fall19\\Group_Project\\Oil&Gas\\Nicole_Zillow_Oil&Gas\\PivotDatesToRows_Oil&Gas.csv",header = T, row.names= NULL, stringsAsFactors=FALSE)
+```
+
+
+I found oil and gas production data for texas on Kaggle. I want to use it to show the trend in oil and gas production vs the trend in med listing prices. Caveat is only if there is a relationship. 
+
+
+
+Used Tableau Prep to convert dates from columns to rows. Created a date column with date as value. Imported data
+Show first few rows. This is based on Zillow time series data for County State Med Listing Prices, broken down by month.
+
+```{r}
+head(`PivotDatesToRows_Oil&Gas`)
+```
+
+Filtered my pivot table so I only see data for Texas
+
+```{r}
+TXMedCounty_ListPrice <- filter(`PivotDatesToRows_Oil&Gas`, State== 'TX')
+```
+
+
+CHeck to make sure filter worked
+```{r}
+head(TXMedCounty_ListPrice)
+```
+
+Imported data set District Listings that I pulled from https://www.rrc.state.tx.us/about-us/organization-activities/rrc-locations/counties-by-dist/ 
+I should probably check to make sure the districts were the same for the data time frame I am using. I will likely used most recent times to be sure.
+
+merged district listing and TX med county price listings so that I could bring in the District #. I will need this when I plot my TX oil and gas production data. 
+
+```{r}
+'District_Listings' <-library(readxl)
+District_Listings <- read_excel("C:\\\\Users\\\\NiDav\\\\OneDrive\\\\Desktop\\\\UTSA\\\\DataVisual&Tech_Fall19\\\\Group_Project\\\\Oil&Gas\\\\Nicole_Zillow_Oil&Gas\\\\District Listings.xlsx")
+View(District_Listings)
+```
+
+
+
+```{r}
+distric_Med_Merge <-merge(District_Listings,TXMedCounty_ListPrice,by='RegionName')
+```
+
+Checking to make sure the merge went well. 
+
+
+```{r}
+View(distric_Med_Merge)
+```
+
+I only want data from 2016 and 2017 and my skills are not yet great enough for the if/or/and so I did it in two grep funtions. 
+
+```{r}
+TXMedCounty_ListPrice_2016<-distric_Med_Merge[grep("^2016",distric_Med_Merge$Date),]
+```
+
+
+```{r}
+TXMedCounty_ListPrice_2017<-distric_Med_Merge[grep("^2017",distric_Med_Merge$Date),]
+```
+
+Used rbind to add the two grep tables together
+
+```{r}
+TXmedCounty_ListPrice_2016_2017<-rbind(TXMedCounty_ListPrice_2017,TXMedCounty_ListPrice_2016)
+```
+
+checking results of rbind
+
+
+```{r}
+View(TXmedCounty_ListPrice_2016_2017)
+```
+
+1st set of data is how I want so now I am playing with graphing which is NOT going well. I need to filter down and focus on a few dates or a few Counties etc.. But at least it is something. Once I get this nailed downs I will incorporate the oil and gas production plot to see how it looks. 
+
+```{r}
+ggplot(TXmedCounty_ListPrice_2016_2017,aes(Metro,County)) +
+  geom_point(aes(color = Date))
+```
+
+
+
+```{r}
+Sub2016<- filter(TXmedCounty_ListPrice_2016_2017,grepl("^2016",TXmedCounty_ListPrice_2016_2017$Date))
+```
+
+```{r}
+View(Sub2016)
+```
+
+```{r}
+subsep09 <- filter(TXmedCounty_ListPrice_2016_2017,Date %in% c("2016-09", "2016-11"))
+```
+
+```{r}
+View(subsep09)
+```
+
+
+Remove variable or various object
+```{r echo=FALSE}
+
+rm()
+```
+
+
