@@ -7,16 +7,17 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
 ```
 ```{r}
 base_zri <- readxl::read_excel(here::here("data", "prepped", "zri_sfr_state.xlsx"))
 ```
 ```{r}
-summary(zri)
-tail(zri)
+summary(base_zri)
+tail(base_zri)
 ```
 ```{r}
-texas_zri <- zri %>%  
+texas_zri <- base_zri %>%  
   subset(RegionName == "texas")
 tail(texas_zri)
 ```
@@ -38,5 +39,34 @@ ggplot() +
              color = "red") +
   geom_point(data = texas_zri, aes(date, zri),
              color = "blue")
+```
+
+```{r}
+ggplot() +
+  geom_line(data = texas_bsi, aes(date, bsi),
+             color = "red") +
+  theme(axis.text.x = element_text(angle = 90, 
+                                   hjust = 1, 
+                                   vjust = 1))
+```
+```{r}
+ggplot(texas_bsi, aes(bsi)) +
+  geom_histogram(bins = 100)
+```
+```{r}
+ggplot(texas_bsi, aes(month, bsi)) +
+  geom_bar(stat = "summary", fun.y = "mean")
+```
+```{r}
+ggplot(texas_bsi, aes(year, bsi)) +
+  geom_bar(stat = "summary", fun.y = "mean")
+```
+```{r}
+ggplot() +
+    geom_point(data = texas_zri, aes(date, zri),
+             color = "blue") +
+  theme(axis.text.x = element_text(angle = 90, 
+                                   hjust = 1, 
+                                   vjust = 1))
 ```
 

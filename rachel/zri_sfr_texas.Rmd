@@ -1,0 +1,49 @@
+---
+title: "zri_sfr_texas"
+author: "Rachel Landers"
+date: "9/22/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+```{r}
+zri_sfr <- readxl::read_excel(here::here("data", "prepped", "zri_sfr_state.xlsx"))
+```
+```{r}
+summary(zri_sfr)
+```
+```{r}
+tail(zri_sfr)
+```
+```{r}
+zri_sfr_tx <- zri_sfr %>% 
+  subset(RegionName == "texas")
+tail(zri_sfr_tx)
+```
+```{r}
+summary(zri_sfr_tx)
+```
+
+```{r}
+ggplot(zri_sfr_tx, aes(date, zri)) +
+  geom_line() +
+  theme(axis.text.x = element_text(angle = 90, 
+                                   hjust = 0, 
+                                   vjust = 0))
+```
+```{r}
+ggplot(zri_sfr_tx, aes(month, zri)) +
+  geom_bar(stat = "summary", fun.y = "mean")
+```
+```{r}
+ggplot(zri_sfr_tx, aes(year, zri)) +
+  geom_bar(stat = "summary", fun.y = "mean")
+```
+```{r}
+ggplot(zri_sfr_tx, aes(zri)) +
+  geom_histogram(bins = 100)
+```
+
