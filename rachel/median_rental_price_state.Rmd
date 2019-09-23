@@ -1,0 +1,69 @@
+---
+title: "state_med_rental_price_single_family"
+author: "Rachel Landers"
+date: "9/21/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+---
+title: "zri_county"
+author: "Rachel Landers"
+date: "9/21/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+med_rental <- readxl::read_excel(here::here("data", "prepped", "state_med_rental_price.xlsx")) %>% 
+  mutate(RegionName = tolower(RegionName))
+```
+```{r}
+tail(med_rental)
+```
+
+
+```{r}
+summary(med_rental)
+```
+
+
+
+```{r}
+med_data <- med_rental %>% 
+  subset(date == '2019-08')
+```
+
+
+
+
+```{r}
+med_geo_data <- med_data %>%
+  inner_join(map_data("state"), by = c("RegionName" = "region"))
+head(med_geo_data)
+```
+
+```{r}
+med_map <- ggplot() +
+    geom_polygon(data = map_data("state"), 
+                 aes(x = long, 
+                     y = lat, 
+                     group = group), 
+                 color = "black", 
+                 fill ="blue") +
+    geom_polygon(data = med_geo_data, 
+             aes(x = long, 
+                 y = lat,
+                 fill = med_rental_price,
+                 group = group),
+             color = "white") +
+    scale_fill_gradient(low = "black", high = "red") +
+  theme_minimal()
+print(med_map)
+```

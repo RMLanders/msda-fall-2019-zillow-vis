@@ -1,0 +1,64 @@
+---
+title: "zri_sfr_state"
+author: "Rachel Landers"
+date: "9/21/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+```{r}
+zri <- readxl::read_excel(here::here("data", "prepped", "zri_sfr_state.xlsx"))
+tail(zri)
+```
+
+
+```{r}
+summary(zri)
+```
+
+```{r}
+current_zri <- zri %>%
+  subset(date == '2019-06')
+```
+
+
+```{r}
+ggplot(current_zri, aes(zri)) +
+  geom_histogram(bins = 50, 
+                 color = "white")
+```
+
+```{r}
+ggplot(current_zri, aes(reorder(RegionName, SizeRank), zri)) +
+  geom_bar(stat = "identity") +
+  coord_flip()
+```
+
+```{r}
+current_zri_geo_data <- current_zri %>%
+  inner_join(map_data("state"), by = c("RegionName" = "region"))
+head(current_zri_geo_data)
+```
+
+```{r}
+current_zri_map <- ggplot() +
+    geom_polygon(data = map_data("state"), 
+                 aes(x = long, 
+                     y = lat, 
+                     group = group), 
+                 color = "black", 
+                 fill ="white") +
+    geom_polygon(data = current_zri_geo_data, 
+             aes(x = long, 
+                 y = lat,
+                 fill = zri,
+                 group = group),
+             color = "white") +
+    scale_fill_gradient(low = "black", high = "red") +
+  theme_minimal()
+print(current_zri_map)
+ggsave("./zri_map.jpeg")
+```
+
