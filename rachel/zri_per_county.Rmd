@@ -1,0 +1,82 @@
+---
+title: "zri_county"
+author: "Rachel Landers"
+date: "9/21/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+zri_per_county <- readxl::read_excel(here::here("data", "prepped", "zri_singlefamilyresidencerentail_county.xlsx"))
+```
+```{r}
+head(zri_per_county)
+```
+
+
+```{r}
+summary(zri_per_county)
+```
+
+```{r}
+zri_per_county %>% 
+  subset(year_mon == '2019-06') %>% 
+  head()
+```
+
+```{r}
+zri_data <- zri_per_county %>% 
+  subset(year_mon == '2019-06')
+```
+
+```{r outlier}
+zri_data %>% 
+  ggplot(aes(zri)) +
+  geom_histogram(bins = 100) +
+  coord_cartesian(xlim = c(17750, 18250), ylim = c(0, 20))
+```
+
+```{r outlier data}
+zri_data %>% 
+  subset(zri > 17900) %>% 
+  head()
+```
+```{r}
+zri_data %>% 
+  ggplot(aes(zri)) +
+  geom_histogram(bins = 200)
+```
+```{r zri_data ordered by SizeRank}
+zri_data %>% 
+  ggplot(aes(reorder(RegionName, zri_data$SizeRank), zri)) +
+  geom_bar(stat = "identity") +
+  coord_flip()
+```
+```{r}
+zri_geographical_data <- zri_data %>% 
+  subset(year_mon == '2019-06') %>% 
+  inner_join(map_data("county"), by = c("county" = "subregion"))
+head(zri_geographical_data)
+```
+
+```{r}
+zri_map <- ggplot() +
+    geom_polygon(data = map_data("county"), 
+                 aes(x = long, 
+                     y = lat, 
+                     group = group), 
+                 color = "black", 
+                 fill ="blue") +
+    geom_polygon(data = zri_geographical_data, 
+             aes(x = long, 
+                 y = lat,
+                 fill = zri,
+                 group = group),
+             color = "white") +
+    scale_fill_gradient(low = "black", high = "red") +
+  theme_minimal()
+print(zri_map)
+```

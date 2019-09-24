@@ -1,0 +1,49 @@
+---
+title: "days_on_zillow_texas"
+author: "Rachel Landers"
+date: "9/22/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+```{r}
+days_on_zillow <- readxl::read_excel(here::here("data", "prepped", "days_on_zillow_state.xlsx"))
+```
+```{r}
+summary(days_on_zillow)
+```
+```{r}
+tail(days_on_zillow)
+```
+```{r}
+days_texas <- days_on_zillow %>% 
+  subset(RegionName == "texas")
+tail(days_texas)
+```
+```{r}
+summary(days_texas)
+```
+
+```{r}
+ggplot(days_texas, aes(date, days)) +
+  geom_line() +
+  theme(axis.text.x = element_text(angle = 90, 
+                                   hjust = 0, 
+                                   vjust = 0))
+```
+```{r}
+ggplot(days_texas, aes(month, days)) +
+  geom_bar(stat = "summary", fun.y = "mean")
+```
+```{r}
+ggplot(days_texas, aes(year, days)) +
+  geom_bar(stat = "summary", fun.y = "mean")
+```
+```{r}
+ggplot(days_texas, aes(days)) +
+  geom_histogram(bins = 200)
+```
+

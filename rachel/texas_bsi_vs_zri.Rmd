@@ -1,0 +1,72 @@
+---
+title: "texas_bsi_vs_zri"
+author: "Rachel Landers"
+date: "9/21/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+```{r}
+base_zri <- readxl::read_excel(here::here("data", "prepped", "zri_sfr_state.xlsx"))
+```
+```{r}
+summary(base_zri)
+tail(base_zri)
+```
+```{r}
+texas_zri <- base_zri %>%  
+  subset(RegionName == "texas")
+tail(texas_zri)
+```
+
+```{r}
+zri_plot <- ggplot(texas_zri, aes(date, zri)) +
+  geom_point(color = "blue")
+```
+
+```{r}
+bsi <- readxl::read_excel(here::here("data", "prepped", "bsi_geo_state.xlsx"))
+texas_bsi <- bsi %>%  
+  subset(RegionName == "texas")
+tail(texas_bsi)
+```
+```{r}
+ggplot() +
+  geom_point(data = texas_bsi, aes(date, bsi),
+             color = "red") +
+  geom_point(data = texas_zri, aes(date, zri),
+             color = "blue")
+```
+
+```{r}
+ggplot() +
+  geom_line(data = texas_bsi, aes(date, bsi),
+             color = "red") +
+  theme(axis.text.x = element_text(angle = 90, 
+                                   hjust = 1, 
+                                   vjust = 1))
+```
+```{r}
+ggplot(texas_bsi, aes(bsi)) +
+  geom_histogram(bins = 100)
+```
+```{r}
+ggplot(texas_bsi, aes(month, bsi)) +
+  geom_bar(stat = "summary", fun.y = "mean")
+```
+```{r}
+ggplot(texas_bsi, aes(year, bsi)) +
+  geom_bar(stat = "summary", fun.y = "mean")
+```
+```{r}
+ggplot() +
+    geom_point(data = texas_zri, aes(date, zri),
+             color = "blue") +
+  theme(axis.text.x = element_text(angle = 90, 
+                                   hjust = 1, 
+                                   vjust = 1))
+```
+
