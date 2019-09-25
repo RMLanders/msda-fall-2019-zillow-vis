@@ -7,9 +7,17 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(dplyr)
+library(ggplot2)
+library(viridis)
+library(gganimate)
+library(ggthemes) # theme_maps() comes from here
+library(here)
 ```
 ```{r}
-zri <- readxl::read_excel(here::here("data", "prepped", "zri_sfr_state.xlsx"))
+zri <- readxl::read_excel(here::here("data", "prepped", "zri_sfr_state.xlsx")) %>% 
+  mutate(date = as.Date(date))
 tail(zri)
 ```
 
@@ -20,7 +28,8 @@ summary(zri)
 
 ```{r}
 current_zri <- zri %>%
-  subset(date == '2019-06')
+  subset(date == '2019-06-01')
+tail(current_zri)
 ```
 
 
@@ -44,12 +53,12 @@ head(current_zri_geo_data)
 
 ```{r}
 current_zri_map <- ggplot() +
-    geom_polygon(data = map_data("state"), 
-                 aes(x = long, 
-                     y = lat, 
-                     group = group), 
-                 color = "black", 
-                 fill ="white") +
+    # geom_polygon(data = map_data("state"), 
+    #              aes(x = long, 
+    #                  y = lat, 
+    #                  group = group), 
+    #              color = "black", 
+    #              fill ="white") +
     geom_polygon(data = current_zri_geo_data, 
              aes(x = long, 
                  y = lat,
@@ -61,4 +70,68 @@ current_zri_map <- ggplot() +
 print(current_zri_map)
 ggsave("./zri_map.jpeg")
 ```
+```{r}
+zri_geo_data <- zri %>% 
+  inner_join(map_data("state"), by = c("RegionName" = "region"))
+tail(zri_geo_data)
+```
+```{r}
+zri_geo_data <- zri %>% 
+  inner_join(map_data("state"), by = c("RegionName" = "region"))
+tail(zri_geo_data)
+```
 
+```{r}
+zri_map <- ggplot() +
+    # geom_polygon(data = state_data, 
+    #              aes(x = long, 
+    #                  y = lat,
+    #                  group = 1), 
+    #              color = "black", 
+    #              fill ="white") +
+    geom_polygon(data = zri_geo_data, 
+             aes(x = long, 
+                 y = lat,
+                 fill = zri,
+                 group = 1),
+             color = "white") +
+    scale_fill_gradient(low = "black", high = "red") +
+  theme_minimal()
+print(zri_map)
+```
+```{r}
+head(zri)
+```
+
+```{r}
+zri_anim <- zri_map +
+  transition_states(mydata$Year, 
+    transition_length = 7, state_length = 7, wrap = TRUE) 
+gganimate::animate(zri_anim)
+```
+```{r}
+zri_map <- ggplot(data = zri_geo_data, 
+             aes(x = long, 
+                 y = lat,
+                 fill = zri,
+                 group = group),
+             color = "white") +
+    geom_polygon() +
+    coord_map(projection = "albers", lat0 = 39, lat1 = 45) +
+    scale_fill_gradient(low = "black", high = "red") +
+    transition_time(date,
+                    transition_length = 7, 
+                    state_length = 7) +
+    labs(title = 'Date: {round(frame_time, 0)}') + 
+#     # labs(title = 'Class: {date}') ERROR: Cannot get dimensions of plot table. Plot region might not be fixedglue cannot interpolate functions into strings.
+# * object 'date' is a function.glue cannot interpolate functions into strings.
+  theme_map()
+```
+```{r}
+animate(zri_map)
+```
+
+
+```{r}
+anim_save("zri.gif")
+```
