@@ -1,0 +1,95 @@
+---
+title: "days_on_zillow_map"
+author: "Rachel Landers"
+date: "9/21/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(dplyr)
+library(ggplot2)
+library(viridis)
+library(gganimate)
+library(ggthemes) # theme_maps() comes from here
+library(here)
+library(plotly)
+```
+```{r}
+regions <- tibble(state_abb = state.abb, region = state.region) %>% 
+  rbind(tibble(state_abb = "DC", region = "South"))
+```
+```{r}
+days_on_zillow <- readxl::read_excel(here::here("data", "prepped", "days_on_zillow_state.xlsx")) %>% 
+  mutate(date = as.Date(date)) %>% 
+  mutate(state_abb = state.abb[match(RegionName, tolower(state.name))]) %>% 
+  mutate(state_abb = replace(state_abb, RegionName == "district of columbia", "DC")) %>% 
+  inner_join(regions)
+tail(days_on_zillow)
+```
+
+
+```{r}
+summary(days_on_zillow)
+```
+```{r}
+n_distinct(days_on_zillow$date)
+```
+```{r}
+region_boxplot <- ggplot(days_on_zillow, aes(year, days, group = year)) +
+  geom_boxplot() + 
+  facet_wrap(~region)
+ggplotly(region_boxplot)
+```
+
+```{r}
+ggplot(days_on_zillow, aes(year, days, group = year)) +
+  geom_boxplot()
+```
+```{r}
+p1 <- ggplot(days_on_zillow, aes(date, days, color = state_abb)) +
+  geom_line() +
+  facet_wrap(~region)
+ggplotly(p1)
+```
+```{r}
+ggplot(days_on_zillow, aes(date, days, color = state_abb)) +
+  geom_line() 
+```
+
+```{r}
+days_on_zillow_geo_data <- days_on_zillow %>%
+  inner_join(map_data("state"), by = c("RegionName" = "region"))
+tail(days_on_zillow_geo_data)
+summarise(days_on_zillow_geo_data)
+```
+```{r}
+distinct(days_on_zillow_geo_data, days_on_zillow_geo_data$date)
+```
+
+```{r}
+days_on_zillow_map <- ggplot(data = days_on_zillow_geo_data, 
+             aes(x = long, 
+                 y = lat,
+                 fill = days,
+                 group = group),
+             color = "white") +
+    geom_polygon() +
+    coord_map(projection = "albers", lat0 = 39, lat1 = 45) +
+    transition_time(date) +
+    ease_aes('cubic-in-out') +
+    scale_fill_viridis_c(option = "plasma") + 
+    labs(title = 'Date: {round(frame_time, 0)}') +
+  theme_map()
+```
+```{r}
+animate(days_on_zillow_map,
+        duration = 100) 
+
+```
+
+
+```{r}
+anim_save("days_on_zillow.gif")
+```

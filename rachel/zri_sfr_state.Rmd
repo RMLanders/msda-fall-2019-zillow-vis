@@ -76,34 +76,6 @@ zri_geo_data <- zri %>%
 tail(zri_geo_data)
 ```
 ```{r}
-zri_geo_data <- zri %>% 
-  inner_join(map_data("state"), by = c("RegionName" = "region"))
-tail(zri_geo_data)
-```
-
-```{r}
-zri_map <- ggplot() +
-    # geom_polygon(data = state_data, 
-    #              aes(x = long, 
-    #                  y = lat,
-    #                  group = 1), 
-    #              color = "black", 
-    #              fill ="white") +
-    geom_polygon(data = zri_geo_data, 
-             aes(x = long, 
-                 y = lat,
-                 fill = zri,
-                 group = 1),
-             color = "white") +
-    scale_fill_gradient(low = "black", high = "red") +
-  theme_minimal()
-print(zri_map)
-```
-```{r}
-head(zri)
-```
-
-```{r}
 zri_anim <- zri_map +
   transition_states(mydata$Year, 
     transition_length = 7, state_length = 7, wrap = TRUE) 
@@ -119,12 +91,9 @@ zri_map <- ggplot(data = zri_geo_data,
     geom_polygon() +
     coord_map(projection = "albers", lat0 = 39, lat1 = 45) +
     scale_fill_gradient(low = "black", high = "red") +
-    transition_time(date,
-                    transition_length = 7, 
-                    state_length = 7) +
+    transition_time(date) +
+    ease_aes('cubic-in-out') +
     labs(title = 'Date: {round(frame_time, 0)}') + 
-#     # labs(title = 'Class: {date}') ERROR: Cannot get dimensions of plot table. Plot region might not be fixedglue cannot interpolate functions into strings.
-# * object 'date' is a function.glue cannot interpolate functions into strings.
   theme_map()
 ```
 ```{r}
