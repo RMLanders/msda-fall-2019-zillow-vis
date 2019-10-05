@@ -1,0 +1,138 @@
+---
+title: "MergedAll"
+author: "Nicole Davis-Brown"
+date: "9/30/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+libr
+```{r}
+library(ggplot2)
+library(dplyr)
+library(readxl)
+library(here)
+library(readr)
+library(lubridate)
+library(tidyverse)
+library(maps)
+```
+
+
+```{r}
+#avmedlistgasprod<-read_excel(here::here("AV_MedListPrice_GasProd.xlsx"))
+```
+
+```{r}
+#view(avmedlistgasprod)
+```
+
+
+ggplot() + 
+geom_line(data=Data1, aes(x=A, y=B), color='green') + 
+geom_line(data=Data2, aes(x=C, y=D), color='red')
+
+p3<-ggplot()+
+  geom_point(data= TXMedCounty_ListPrice_2016_2,
+             aes(TXMedCounty_ListPrice_2016_2$Date,TXMedCounty_ListPrice_2016_2$MedListedPrice))+
+  geom_line(aes(GasProd2016Totals$`GasProd2016$month`, GasProd2016Totals$Totals))
+
+geom_vline(aes(xintercept =as.numeric(pres2$start)),
+    data = pres2,
+    colour ="white" , alpha = .5
+  )
+
+```{r}
+options(scipen = 999)
+```
+
+```{r}
+p2<-ggplot()+
+geom_smooth(data=avmedlistgasprod, aes(x=avmedlistgasprod$Date, y=avmedlistgasprod$MedListPriceAve), color='green')
+labs(x=avmedlistgasprod$Date,y=avmedlistgasprod$MedListPriceAve)
+
+```
+
+```{r}
+p2 + theme(plot.subtitle = element_text(vjust = 1), 
+    plot.caption = element_text(vjust = 1), 
+    axis.ticks = element_line(size = 1))
+```
+
+
+```{r}
+p1<-ggplot()+
+geom_smooth(data=avmedlistgasprod, aes(x=avmedlistgasprod$Date, y=avmedlistgasprod$GasProdAve), color='red')
+```
+
+
+```{r}
+p1 + theme(plot.subtitle = element_text(vjust = 1), 
+    plot.caption = element_text(vjust = 1), 
+    axis.ticks = element_line(size = 1))
+```
+
+
+```{r}
+ggplot()+
+geom_smooth(data=avmedlistgasprod, aes(x=avmedlistgasprod$Date, y=avmedlistgasprod$GasProdAve))+
+geom_smooth(data=avmedlistgasprod, aes(x=avmedlistgasprod$Date, y=avmedlistgasprod$MedListPriceAve))+
+              facet_wrap(~avmedlistgasprod$DC)
+```
+
+
+```{r}
+ggplot(avmedlistgasprod, aes(avmedlistgasprod$Date, avmedlistgasprod$GasProdAve, color = avmedlistgasprod$DC))+
+  geom_point()
+  
+```
+
+```{r}
+ggplot(avmedlistgasprod, aes(avmedlistgasprod$Date, avmedlistgasprod$MedListPriceAve, color = avmedlistgasprod$DC))+
+  geom_point()
+```
+
+
+
+p2<-ggplot()+
+geom_smooth(data=avmedlistgasprod, aes(x=avmedlistgasprod$Date, y=avmedlistgasprod$MedListPriceAve), color='green')
+labs(x=avmedlistgasprod$Date,y=avmedlistgasprod$MedListPriceAve)
+
+```{r}
+p3<-ggplot()+
+geom_smooth(data=avmedlistgasprod, aes(x=avmedlistgasprod$Date, y=avmedlistgasprod$GasProdAve))+
+  geom_point(data=avmedlistgasprod, aes(x=avmedlistgasprod$Date, y=avmedlistgasprod$MedListPriceAve), color = avmedlistgasprod$DC)
+
+    
+```
+
+```{r}
+p3 + theme(plot.subtitle = element_text(vjust = 1), 
+    plot.caption = element_text(vjust = 1)) + theme(plot.subtitle = element_text(vjust = 1), 
+    plot.caption = element_text(vjust = 1), 
+    axis.ticks = element_line(size = 1)) +labs(x = "date", y = "averages")
+```
+
+
+
+
+```{r}
+testmap<-map_data('county')
+map<-ggplot()+
+  geom_polygon(data= testmap,
+                  aes(x = long, 
+                  y = lat, 
+                  group = group), 
+                  color = "white", 
+                  fill ="gray")
+
+```
+
+
+```{r}
+print(map)
+```
+

@@ -22,13 +22,24 @@ library(dplyr)
 library(readxl)
 library(here)
 library(readr)
+library(lubridate)
+library(tidyverse)
 ```
 
+```{r}
+write_excel_csv(GasProdTotals, here::here('GasProdTotals'))
+write_excel_csv(TXmedListTotals,here::here('TXMedListTotals'))
+```
 
 
 ```{r}
-PivotDatesToRows_Oil_Gas<<- read_csv(here("PivotDatesToRows_Oil_Gas.csv"))
+PivotDatesToRows_Oil_Gas<- read_csv(here::here("PivotDatesToRows_Oil_Gas.csv"))
 ```
+
+```{r}
+GasProd2016_2017<-read_csv("C:\\Users\\NiDav\\OneDrive\\Desktop\\UTSA\\DataVisual&Tech_Fall19\\Group_Project\\Oil&Gas\\GasProd_9.16-7.17_TexasDistricts.csv")
+```
+
 
 
 I found oil and gas production data for texas on Kaggle. I want to use it to show the trend in oil and gas production vs the trend in med listing prices. Caveat is only if there is a relationship. 
@@ -62,7 +73,7 @@ merged district listing and TX med county price listings so that I could bring i
 
 
 ```{r}
-District_Listings<-read_excel(here("District Listings.xlsx"))
+District_Listings<-read_excel(here::here("District Listings.xlsx"))
 ```
 
 
@@ -102,14 +113,22 @@ checking results of rbind
 View(TXmedCounty_ListPrice_2016_2017)
 ```
 
+
+Reading in Gas Production Data-only 2016 to get a feel for it first. 
 ```{r}
 GasProd2016<-read_excel(here("GasProd_2016_Subset.xlsx"))
 ```
 
+
+Just playing with summarise
 ```{r}
 GasProd2016 %>% group_by(GasProd2016$month, GasProd2016$monthly_type_well)%>%
 summarise()
 ```
+
+
+
+I am curious to see the totals by district 1
 ```{r}
 GasProd2016Totals<-GasProd2016 %>%
  group_by(GasProd2016$district, GasProd2016$month) %>%
@@ -117,9 +136,141 @@ GasProd2016Totals<-GasProd2016 %>%
 ```
 
 
+
 ```{r}
 head(GasProd2016Totals)
 ```
+train_set_claim<-filter(T1,grepl("Fully Paid Claim|Surgery",T1$event_descr))
+
+
+Pulled in all available data for 2016 and 2017
+```{r}
+GasProdTotals<- GasProd2016_2017  %>% group_by(GasProd2016_2017$Date, GasProd2016_2017$DC)%>%
+summarise(GasTotals = sum(gas_production, na.rm = TRUE))
+```
+
+
+```{r}
+view(GasProdTotals)
+```
+
+```{r}
+head(TXmedCounty_ListPrice_2016_2017)
+```
+
+```{r}
+
+
+```
+
+
+```{r}
+View(TXMedCounty_ListPrice_2016_2)
+```
+
+ & grepl("1", TXMedCounty_ListPrice_2016$DC)
+```{r}
+TXMedCounty_ListPrice_2016_2<-filter(TXMedCounty_ListPrice_2016,grepl("2016-09|2016-10|2016-11|2016-12",TXMedCounty_ListPrice_2016$Date) & grepl("1", TXMedCounty_ListPrice_2016$DC))
+```
+
+
+GasProdTotals<- GasProd2016_2017  %>% group_by(GasProd2016_2017$Date, GasProd2016_2017$DC)%>%
+summarise(Totals = sum(gas_production))
+
+```{r}
+
+TXmedListTotals<-TXmedCounty_ListPrice_2016_2017 %>%group_by(TXmedCounty_ListPrice_2016_2017$Date, TXmedCounty_ListPrice_2016_2017$DC)%>%
+summarise(totals=mean(MedListedPrice, na.rm = TRUE))
+```
+
+```{r}
+view(TXmedListTotals)
+```
+
+
+
+```{r}
+testmerge<TXmedListTotals%>% full_join(GasProdTotals)
+```
+
+
+```{r}
+P1<-ggplot(GasProdTotals,aes(GasProdTotals$`GasProd2016_2017$month_2`, GasProdTotals$Totals))+
+  geom_smooth()+
+  geom_dotplot(TXmedCounty_ListPrice_2016_2017, aes(TXmedCounty_ListPrice_2016_2017$Date,TXmedCounty_ListPrice_2016_2017$MedListedPrice))
+                   
+  
+```
+
+ggplot(TXmedCounty_ListPrice_2016_2017,aes(Metro,County)) +
+  geom_point(aes(color = Date))
+
+
+```{r}
+ggplot(TXmedListTotals, 
+       aes(TXmedListTotals$`TXmedCounty_ListPrice_2016_2017$Date`, TXmedListTotals$totals),
+       color=TXmedListTotals$`TXmedCounty_ListPrice_2016_2017$DC`(c("1", "2","3", "4","5", "6"))) +
+
+geom_area()
+```
+
+
+```{r}
+P1
+```
+
+
+
+ggplot() + 
+geom_line(data=Data1, aes(x=A, y=B), color='green') + 
+geom_line(data=Data2, aes(x=C, y=D), color='red')
+
+p3<-ggplot()+
+  geom_point(data= TXMedCounty_ListPrice_2016_2,
+             aes(TXMedCounty_ListPrice_2016_2$Date,TXMedCounty_ListPrice_2016_2$MedListedPrice))+
+  geom_line(aes(GasProd2016Totals$`GasProd2016$month`, GasProd2016Totals$Totals))
+
+geom_vline(aes(xintercept =as.numeric(pres2$start)),
+    data = pres2,
+    colour ="white" , alpha = .5
+  )
+
+```{r}
+p3<-ggplot(TXMedCounty_ListPrice_2016_2,(aes(TXMedCounty_ListPrice_2016_2$Date)+
+geom_jitter(aes(GasProd2016Totals$GasProd2016$month, GasProd2016Totals$Totals),
+    data = GasProd2016Totals,
+    colour ="white" , alpha = .5
+  )))
+
+```
+
+```{r}
+p3
+```
+
+
+```{r}
+P2<-ggplot(TXMedCounty_ListPrice_2016_2,aes(TXMedCounty_ListPrice_2016_2$Date,TXMedCounty_ListPrice_2016_2$MedListedPrice, color= TXMedCounty_ListPrice_2016_2$County) )+
+  geom_point()+
+ geom_smooth(data = GasProd2016Totals)
+```
+
+
+
+
+```{r}
+Sub2016<- filter(TXmedCounty_ListPrice_2016_2017,grepl("^2016",TXmedCounty_ListPrice_2016_2017$Date))
+```
+
+```{r}
+subsep09 <- filter(TXmedCounty_ListPrice_2016_2017,Date %in% c("2016-09", "2016-11", "2016-10", "2016-12"))
+```
+
+```{r}
+View(subsep09)
+```
+
+
 
 
 1st set of data is how I want so now I am playing with graphing which is NOT going well. I need to filter down and focus on a few dates or a few Counties etc.. But at least it is something. Once I get this nailed downs I will incorporate the oil and gas production plot to see how it looks. 
@@ -143,12 +294,3 @@ View(Sub2016)
 subsep09 <- filter(TXmedCounty_ListPrice_2016_2017,Date %in% c("2016-09", "2016-11"))
 ```
 
-```{r}
-View(subsep09)
-```
-
-
-Remove variable or various object
-```{r echo=FALSE}
-rm()
-```
