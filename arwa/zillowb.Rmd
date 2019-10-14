@@ -1,0 +1,302 @@
+---
+title: "zillow2"
+author: "Arwa N"
+date: "10/5/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(dplyr)
+library(ggplot2)
+library(ggThemeAssist)
+```
+
+```{r}
+options(scipen = 999)
+```
+
+
+
+```{r}
+g1 <- ggplot(sfrbystatecnt, aes(x = date))+
+  geom_point(aes(y = Value, color = State))+
+  geom_point(aes(y = APR * 100000, color = "red"))
+g1 <- g1 + scale_y_continuous(sec.axis = sec_axis(~./100000, name = "APR"))
+g1
+```
+
+```{r}
+ggplot(sfrbystatecnt, aes(date, group = State)) +
+  geom_line(aes(y = Value))+
+  geom_bar(aes(fill = APR))+
+  theme_minimal()
+```
+
+```{r}
+p1<- ggplot(sfrbystatecnt, aes(date, color = State)) +
+  geom_line(aes(y = Value)) +
+  geom_line(aes(y = APR * 100000), color = "purple") +
+  theme_minimal() +
+  scale_y_continuous(labels = scales::dollar, sec.axis = sec_axis(~ ./100000, name = "APR %"))+
+  scale_x_date(breaks='2 year', date_labels = "%m-%y")+
+  labs(x = "Year", y = "Home Value")
+```
+
+
+
+```{r}
+p1
+```
+
+```{r}
+plotly::ggplotly(p1)
+```
+
+
+```{r}
+p2<- ggplot(sfrbystate2, aes(date, color = State)) +
+  geom_line(aes(y = Value)) +
+  facet_wrap(~ State)+
+  theme(legend.position = "none")
+  
+```
+
+```{r}
+p2
+```
+
+```{r}
+p3<- ggplot(Homesales, aes(date, color = State)) +
+  geom_line(aes(y = Sales)) +
+  geom_line(aes(y = APR * 10000), color = "purple")+
+  facet_wrap(~ State)+
+  theme(legend.position = "none")
+```
+
+```{r}
+str(Homesales)
+```
+
+
+
+```{r}
+p3
+```
+
+```{r}
+p4<- ggplot(Homesalesstate, aes(date, color = State)) +
+  geom_line(aes(y = Sales)) +
+  geom_line(aes(y = APR * 10000), color = "purple")+
+  facet_wrap(~ State)+
+  theme(legend.position = "none")
+```
+
+```{r}
+p4
+```
+
+```{r}
+p5<- ggplot(Homesalesstate2, aes(date, color = State)) +
+  geom_line(aes(y = Sales)) +
+  facet_wrap(~ State)+
+  theme_minimal()+
+  theme(legend.position = "none")
+```
+
+```{r}
+plotly::ggplotly(p5)
+```
+
+```{r}
+p6<- ggplot(Homesalesstate2, aes(date, color = State)) +
+  geom_line(aes(y = Sales)) +
+  theme(legend.position = "none")+
+  theme_minimal()
+```
+
+```{r}
+plotly::ggplotly(p6)
+```
+
+```{r}
+p7<- ggplot(Homesalesstate3, aes(date)) +
+  geom_line(aes(y = Sales)) +
+  geom_line(aes(y = APR * 10000), color = "purple")+
+  facet_wrap(~ State)+
+  scale_y_continuous(sec.axis = sec_axis(~ ./10000, name = "APR %"))+
+  theme_minimal()+
+  theme(legend.position = "none")+
+  labs(x = "Year", y = "Home Sales")
+  
+```
+
+```{r}
+p7
+```
+
+
+```{r}
+p8<- ggplot(sfrbystate3, aes(date, color = State)) +
+  geom_line(aes(y = Value)) +
+  facet_wrap(~ State)+
+  theme_minimal()+
+  theme(legend.position = "none")+
+  scale_y_continuous(labels = scales::dollar)+
+  labs(x = "Year", y = "Home Values")
+```
+
+
+```{r}
+p8
+```
+
+```{r}
+str(homevalesycity2)
+```
+
+
+```{r}
+p9<- ggplot(homevalesycity2, aes(Date, color = City)) +
+  geom_line(aes(y = Value)) +
+  facet_wrap(~ City)+
+  theme_minimal()+
+  theme(legend.position = "none")+
+  scale_y_continuous(labels = scales::dollar)+
+  labs(x = "Year", y = "Home Values")
+```
+
+
+```{r}
+p9
+```
+
+```{r}
+plotly::ggplotly(p9)
+```
+
+
+
+```{r}
+p10 <- ggplot(homevalesycity2, aes(Date, color = City)) +
+  geom_boxplot(aes(y = Value)) +
+  theme_minimal()+
+  facet_wrap(~ City)+
+  theme(legend.position = "none")+
+  scale_y_continuous(labels = scales::dollar)+
+  labs(x = "Year", y = "Home Values")
+```
+
+```{r}
+p10
+```
+
+
+```{r}
+p11 <- ggplot(homevalesycity2, aes(Date, color = City)) +
+  geom_boxplot(aes(y = Value)) +
+  theme_minimal()+
+  scale_y_continuous(labels = scales::dollar)+
+  labs(x = "Year", y = "Home Values")
+```
+
+
+
+```{r}
+p11
+```
+
+
+```{r}
+p12 <- ggplot(homevalesycity2, aes(x = City , y = Value, color = City))+
+  geom_boxplot() +
+  theme_minimal()+
+  scale_y_continuous(labels = scales::dollar) +
+  labs(x = "City", y = "Home Values")
+
+```
+
+```{r}
+p12
+```
+
+```{r}
+plotly::ggplotly(p12)
+```
+
+
+```{r}
+p15 <- ggplot(homevalesycity2)+
+  geom_boxplot(aes(y = Value, color = City)) +
+  theme_minimal()+
+  scale_y_continuous(labels = scales::dollar) +
+  labs(x = "Year", y = "Home Values")
+```
+
+```{r}
+p15
+```
+
+```{r}
+homevalues1 <- homevalesycity2 %>% 
+  filter(!is.na(Value)) %>% 
+  mutate(year = as.factor(lubridate::year(Date)),
+         logValue = log(Value)) %>% 
+ggplot(aes(x = year, y = Value, color = City)) +
+  geom_boxplot(outlier.shape = NA) +
+  facet_wrap(~ City) +
+  theme_minimal() +
+  theme(legend.position = "none") +
+  scale_y_continuous(labels = scales::dollar)+
+  labs(x = "Year", y = "Home Values")
+```
+
+```{r}
+homevalues1
+```
+
+```{r}
+homevalues2 <- homevalesycity2DAHS %>% 
+  filter(!is.na(Value)) %>% 
+  mutate(year = as.factor(lubridate::year(Date)),
+         logValue = log(Value)) %>% 
+ggplot(aes(x = year, y = Value, color = City)) +
+  geom_boxplot() +
+  facet_wrap(~ City) +
+  theme_minimal() +
+  theme(legend.position = "none") +
+  scale_y_continuous(labels = scales::dollar)+
+  labs(x = "Year", y = "Home Values")
+```
+
+```{r}
+homevalues2
+```
+
+
+
+```{r}
+plotly::ggplotly(homevalues2)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```{r}

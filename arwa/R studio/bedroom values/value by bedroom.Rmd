@@ -1,0 +1,28 @@
+---
+title: "compare values"
+author: "Arwa N"
+date: "9/30/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(ggplot2)
+```
+
+```{r}
+summary(`1Bedroom_MRP`)
+```
+
+
+```{r}
+PLOT1 <- (data = `1Bedroom_MRP`, mapping  aes(x = Monthly, y = OneBValues ))+
+  geom_point()
+
+PLOT2 <- (`2Bedroom_MRP`, aes(x = Monthly, y = TwoBValues))+
+  geom_point()
+```
+

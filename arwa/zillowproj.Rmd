@@ -1,0 +1,154 @@
+---
+title: "zillow"
+author: "Arwa N"
+date: "10/4/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+library(ggplot2)
+```
+
+```{r}
+summary(sfrbystate)
+```
+
+```{r}
+ValueLine <- geom_line(data = sfrbystate, mapping = aes(date, Value), color = State, size = 1)
+```
+
+```{r}
+APRLine <- geom_line(data = sfrbystate, mapping = aes(date, APR), color = "red", size = 1)
+```
+
+```{r}
+summary(sfrbystate)
+```
+
+
+```{r}
+sfrdate <- as.Date(as.character(sfrbystate$date))
+```
+
+
+```{r}
+ggplot(sfrbystate, aes(date, APR)) +
+    geom_line(aes(color = as.character(State)),alpha = 0.3)+
+  facet_wrap(~ State)
+```
+
+
+```{r}
+str(sfrbystate) 
+```
+
+```{r}
+options(scipen = 999)
+```
+
+
+
+```{r}
+ggplot(sfrbystate, aes(date, Value)) +
+    geom_point(aes(color = as.character(State)),alpha = 0.3)+
+  facet_wrap(~ State)+
+  theme(legend.position = "none")
+```
+
+```{r}
+ggplot() + APRLine + ValueLine
+```
+
+```{r}
+library(scales)
+```
+
+
+```{r}
+ggplot(sfrbystate, aes(date, Value)) +
+    geom_smooth(method = lm)
+```
+
+
+```{r}
+x<- sfrbystatethree$date
+y1<- sfrbystatethree$Value
+y2<- sfrbystatethree$APR
+```
+
+```{r}
+plot(x = x, y = y1)+
+```
+
+```{r}
+str(sfrbystatethree)
+```
+```{r}
+library(plotly)
+```
+
+
+```{r}
+plot.default(x = x, y = y1)
+```
+
+```{r}
+p1 <- ggplot(sfrbystatethree, aes(x = date)) + geom_point(aes(y = Value)) + facet_wrap(~ State)
+p1
+```
+
+
+```{r}
+plotly::ggplotly(p1)
+```
+
+
+
+```{r}
+p <- ggplot(sfrbystatethree, aes(x = date))
+  p <- p + geom_point(aes(y = Value))
+  p <- p + geom_point(aes(y = APR))
+    p <- p + scale_y_continuous(sec.axis = sec_axis(~./100000, name = "APR")) + facet_wrap(~ State)
+   p <- p + scale_colour_manual(values = c("blue", "red"))
+    p
+```
+```{r}
+plotly::ggplotly(p)
+```
+
+```{r}
+
+g <- ggplot(sfrbystatethree, aes(x = date))
+  g <- g + geom_point(aes(y = Value, group = date, color = State))+
+    theme_minimal() + scale_x_date()
+  g
+```
+
+
+```{r}
+plotly::ggplotly(g)
+```
+
+```{r}
+g2 <- ggplot(sfrbystatethree, aes(x = date))
+  g2 <- g2 + geom_point(aes(y = APR), color  = "green")
+  plotly::ggplotly(g2)
+
+```
+
+```{r}
+sfrbystatethree$date <- as.Date(sfrbystatethree$date)
+
+```
+```{r}
+g4 <- ggplot(sfrbystatecnt, aes(x = date))
+  g4 <- g4 + geom_point(aes(y = Value, group = date, color = State))
+    theme_minimal()
+    g4
+```
+
