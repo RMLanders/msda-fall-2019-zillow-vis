@@ -1,0 +1,128 @@
+---
+title: "HElp from malshe"
+author: "Sarah Haley"
+date: "10/10/2019"
+output: html_document
+---
+```{r}
+library(tidyverse)
+library(ggplot2)
+library(readr)
+library(plotly)
+library(lubridate)
+```
+
+
+```{r}
+StateZHVI       <- read_csv("StateZHVI.csv")
+```
+
+
+```{r}
+StateZValue <- StateZHVI %>% 
+  mutate(Date2 = lubridate::ymd(paste0(Date,"-01")))
+```
+
+```{r}
+p7 <- ggplot(StateZValue[StateZValue$RegionName == "Texas" ,], aes(Date2, ZHVI,
+                                 color = RegionName)) +
+  geom_point(alpha = 0.5) +
+  theme_minimal() +
+  geom_vline(xintercept = as.Date("2007-12-01")) +
+  theme(aspect.ratio = 3/4) +
+  geom_point(aes(Date2, ZHVI, color = RegionName),
+             data = StateZValue[StateZValue$RegionName == "California" ,]) +
+  scale_color_discrete(name = "State") +
+  scale_y_continuous(labels = scales::dollar) +
+  labs(x = "Year", y = "ZHVI (USD)")
+
+print(p7)
+```
+
+```{r}
+p8 <- ggplot(StateZValue[StateZValue$RegionName == "Texas" ,], aes(Date2, ZHVI,
+                                 color = RegionName)) +
+  geom_point(alpha = 0.5,
+             color = "turquoise") +
+  theme_minimal() +
+  geom_vline(xintercept = as.Date("2007-12-01")) +
+  theme(aspect.ratio = 3/4) +
+  scale_color_discrete(name = "State") +
+  scale_y_continuous(labels = scales::dollar) +
+  labs(x = "Year", y = "ZHVI (USD)") +
+  ggtitle("Texas")
+
+print(p8)
+```
+
+```{r}
+p9 <- ggplot(StateZValue[StateZValue$RegionName == "California" ,], aes(Date2, ZHVI,
+                                 color = RegionName)) +
+  geom_point(alpha = 0.5) +
+  theme_minimal() +
+  geom_vline(xintercept = as.Date("2007-12-01")) +
+  theme(aspect.ratio = 3/4) +
+  scale_color_discrete(name = "State") +
+  scale_y_continuous(labels = scales::dollar) +
+  labs(x = "Year", y = "ZHVI (USD)") +
+  ggtitle("California") +
+  theme(legend.position = "none")
+
+
+print(p9)
+```
+
+
+
+```{r}
+ggsave("TwoStatePlot.png", plot = p7)
+ggsave("TexasStatePlot.png", plot = p8)
+ggsave("CaliStatePlot.png", plot = p9)
+```
+
+
+138900
+
+```{r}
+p10 <- ggplot(StateZValue[StateZValue$RegionName == "Texas" ,], aes(Date2, ZHVI,
+                                 color = RegionName)) +
+  geom_point(alpha = 0.5,
+             color = "turquoise") +
+  theme_minimal() +
+  geom_hline(yintercept = 138900) +
+  theme(aspect.ratio = 3/4,
+        panel.grid.minor.y = element_line(color = c("grey92", NA, NA, "grey92", "grey92", "grey92"))) +
+  scale_color_discrete(name = "State") +
+  scale_y_continuous(labels = scales::dollar,
+                     breaks = c(90000, 120000, 138900, 150000, 180000)) +
+  labs(x = "Year", y = "ZHVI (USD)") +
+  ggtitle("Texas")
+
+print(p10)
+```
+
+
+```{r}
+p11 <- ggplot(StateZValue[StateZValue$RegionName == "California" ,], aes(Date2, ZHVI,
+                                 color = RegionName)) +
+  geom_point(alpha = 0.5) +
+  theme_minimal() +
+  geom_hline(yintercept = 540100) +
+  theme(aspect.ratio = 3/4) +
+  scale_color_discrete(name = "State") +
+  scale_y_continuous(labels = scales::dollar,
+                     breaks = c(200000, 300000, 400000, 500000, 540100)) +
+  labs(x = "Year", y = "ZHVI (USD)") +
+  ggtitle("California") +
+  theme(legend.position = "none")
+
+
+print(p11)
+```
+
+```{r}
+ggsave("TexasRecoveryPlot.png", plot = p10)
+ggsave("CaliforniaRecoveryPlot.png", plot = p11)
+```
+
+grey92

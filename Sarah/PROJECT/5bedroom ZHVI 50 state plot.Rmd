@@ -1,0 +1,30 @@
+---
+title: "5 Bedroom"
+author: "Sarah Haley"
+date: "9/26/2019"
+output: html_document
+---
+
+```{r}
+library(tidyverse)
+library(ggplot2)
+library(readr)
+library(plotly)
+```
+
+
+```{r}
+StateZHVI5bed   <- read_csv("StateZHVI5Bedroom.csv")
+```
+
+
+```{r}
+g9 <- ggplot(StateZHVI5bed, aes(Date, ZHVI,
+                                 color = RegionName)) +
+  geom_point(alpha = 0.5) +
+  theme_minimal() +
+  facet_wrap(~RegionName) +
+  theme(legend.position = "none")
+
+ggplotly(g9)
+```

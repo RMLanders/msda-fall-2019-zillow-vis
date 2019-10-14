@@ -1,0 +1,40 @@
+---
+title: "figuring out hline"
+author: "Sarah Haley"
+date: "10/14/2019"
+output: html_document
+---
+
+```{r}
+library(tidyverse)
+library(ggplot2)
+library(readr)
+library(plotly)
+library(lubridate)
+```
+
+```{r}
+StateZHVI       <- read_csv("StateZHVI.csv")
+```
+
+```{r}
+StateZValue <- StateZHVI %>% 
+  mutate(Date2 = lubridate::ymd(paste0(Date,"-01")))
+```
+
+```{r}
+p8 <- ggplot(StateZValue[StateZValue$RegionName == "Texas" ,], aes(Date2, ZHVI,
+                                 color = RegionName)) +
+  geom_point(alpha = 0.5,
+             color = "turquoise") +
+  theme_minimal() +
+  geom_vline(xintercept = as.Date("2007-12-01")) +
+  theme(aspect.ratio = 3/4) +
+  scale_color_discrete(name = "State") +
+  scale_y_continuous(labels = scales::dollar) +
+  labs(x = "Year", y = "ZHVI (USD)") +
+  ggtitle("Texas")
+
+ggplotly(p8)
+```
+

@@ -1,0 +1,75 @@
+---
+title: "Attempt1"
+author: "Sarah Haley"
+date: "9/16/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+library(ggplot2)
+library(readr)
+library(plotly)
+```
+
+```{r}
+MetroPriceCut1 <- read_csv("MetroPriceCut1.csv")
+StatePriceCut1 <- read_csv("StatePriceCut1.csv")
+TopTierPC      <- read_csv("PriceCutTopTier.csv")
+MiddleTierPC   <- read_csv("PriceCutMiddleTier.csv")
+BottomTierPC   <- read_csv("PriceCutBottomTier.csv")
+```
+
+```{r}
+g1 <- ggplot(MetroPriceCut1, aes(Date, PriceCut)) +
+  geom_point(alpha = 0.1) +
+  theme_minimal()
+
+ggplotly(g1)
+```
+
+
+```{r}
+g2 <- ggplot(StatePriceCut1, aes(Date, PriceCut,
+                                 color = RegionName)) +
+  geom_point(alpha = 0.5) +
+  theme_minimal()
+
+ggplotly(g2)
+```
+
+```{r}
+g3 <- 
+ggplot(TopTierPC, aes(Date, PriceCut,
+                                 color = RegionName)) +
+  geom_point(alpha = 0.2) +
+  theme_minimal() +
+  theme(legend.position = "none")
+```
+
+```{r}
+g4 <- ggplot(MiddleTierPC, aes(Date, PriceCut,
+                                 color = RegionName)) +
+  geom_point(alpha = 0.2) +
+  theme_minimal() +
+  theme(legend.position = "none")
+```
+
+```{r}
+g5 <- ggplot(BottomTierPC, aes(Date, PriceCut,
+                                 color = RegionName)) +
+  geom_point(alpha = 0.2) +
+  theme_minimal() +
+  theme(legend.position = "none")
+```
+
+```{r}
+ggplotly(g3)
+ggplotly(g4)
+ggplotly(g5)
+```
+

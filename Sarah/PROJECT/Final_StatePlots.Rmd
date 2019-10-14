@@ -1,0 +1,124 @@
+---
+title: "Plots for presentation"
+author: "Sarah Haley"
+date: "10/10/2019"
+output: html_document
+---
+
+```{r}
+library(tidyverse)
+library(ggplot2)
+library(readr)
+library(plotly)
+library(lubridate)
+```
+
+```{r}
+MetroPriceCut1 <- read_csv("MetroPriceCut1.csv")
+StatePriceCut1 <- read_csv("StatePriceCut1.csv")
+TopTierPC      <- read_csv("PriceCutTopTier.csv")
+MiddleTierPC   <- read_csv("PriceCutMiddleTier.csv")
+BottomTierPC   <- read_csv("PriceCutBottomTier.csv")
+```
+
+```{r}
+StateMedianSqft <- read_csv("StateMedianValuePerSqft.csv")
+StateZHVI       <- read_csv("StateZHVI.csv")
+MetroZHVI       <- read_csv("MetroZHVI.csv")
+```
+
+```{r}
+p1 <- ggplot(StateZHVI[StateZHVI$RegionName == "Texas" ,], aes(Date, ZHVI,
+                                 color = RegionName)) +
+  geom_point(alpha = 0.5) +
+  theme_minimal() +
+  facet_wrap(~RegionName) +
+  theme(legend.position = "none") +
+  scale_x_discrete(breaks=c("1996-04","2000-01","2005-01","2010-01","2015-01","2019-01")) +
+  geom_vline(xintercept = which(StateZHVI$Date == "2008-01"),
+             color = "blue")
+
+print(p1)
+```
+```{r}
+p2 <- ggplot(StateZHVI[StateZHVI$RegionName == "California" ,], aes(Date, ZHVI,
+                                 color = RegionName)) +
+  geom_point(alpha = 0.5) +
+  theme_minimal() +
+  facet_wrap(~RegionName) +
+  theme(legend.position = "none") +
+  scale_x_discrete(breaks=c("1996-04","2000-01","2005-01","2010-01","2015-01","2019-01"))
+print(p2)
+```
+
+
+```{r}
+head(StateZHVI, n=10000)
+```
+
+
+```{r}
+p3 <- ggplot(StateZHVI[StateZHVI$RegionName == "Texas" ,], aes(Date, ZHVI,
+                                 color = RegionName)) +
+  geom_point(alpha = 0.5) +
+  theme_minimal() +
+  theme(aspect.ratio = 3/4) +
+  scale_x_discrete(breaks=c("1996-04","2000-01","2005-01", "2010-01","2015-01","2019-01")) +
+  geom_vline(xintercept = which(StateZHVI$Date == "2008-01"),
+             color = "blue") +
+  geom_point(aes(Date, ZHVI, color = RegionName),
+             data = StateZHVI[StateZHVI$RegionName == "California" ,]) +
+  scale_color_discrete(name = "State")
+
+print(p3)
+```
+
+
+
+
+```{r}
+ggsave("TwoStatePlot.jpg", plot = p3, device = "jpeg")
+```
+
+
+
+```{r}
+p4 <- ggplot(StateZHVI[StateZHVI$RegionName == "Texas" ,], aes(Date, ZHVI)) +
+  geom_point(alpha = 0.5,
+             color = "turquoise") +
+  theme_minimal() +
+  theme(aspect.ratio = 3/4) +
+  ggtitle("Texas", subtitle = "Zillow Home Value Index") +
+  scale_x_discrete(breaks=c("1996-04","2000-01","2005-01","2010-01","2015-01","2019-01")) +
+  theme(legend.position = "none")
+
+print(p4)
+```
+```{r}
+ggsave("TexasStatePlot.jpg", plot = p4, device = "jpeg")
+
+```
+
+
+```{r}
+p5 <- ggplot(StateZHVI[StateZHVI$RegionName == "California" ,], aes(Date, ZHVI, color = RegionName)) +
+  geom_point(alpha = 0.5) +
+  theme_minimal() +
+  theme(aspect.ratio = 3/4) +
+  ggtitle("California", subtitle = "Zillow Home Value Index") +
+  scale_x_discrete(breaks=c("1996-04","2000-01","2005-01","2010-01","2015-01","2019-01")) +
+  theme(legend.position = "none")
+
+print(p5)
+```
+
+
+```{r}
+ggsave("CaliStatePlot.jpg", plot = p5, device = "jpeg")
+
+```
+
+
+
+
+

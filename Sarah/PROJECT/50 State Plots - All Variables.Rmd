@@ -1,0 +1,122 @@
+---
+title: "attempt2"
+author: "Sarah Haley"
+date: "9/24/2019"
+output: html_document
+---
+
+```{r}
+library(tidyverse)
+library(ggplot2)
+library(readr)
+library(plotly)
+```
+
+```{r}
+MetroPriceCut1 <- read_csv("MetroPriceCut1.csv")
+StatePriceCut1 <- read_csv("StatePriceCut1.csv")
+TopTierPC      <- read_csv("PriceCutTopTier.csv")
+MiddleTierPC   <- read_csv("PriceCutMiddleTier.csv")
+BottomTierPC   <- read_csv("PriceCutBottomTier.csv")
+```
+
+```{r}
+StateMedianSqft <- read_csv("StateMedianValuePerSqft.csv")
+StateZHVI       <- read_csv("StateZHVI.csv")
+StateZHVI1bed   <- read_csv("StateZHVI1Bedroom.csv")
+StateZHVI5bed   <- read_csv("StateZHVI5Bedroom.csv")
+MetroZHVI       <- read_csv("MetroZHVI.csv")
+```
+
+```{r}
+g1 <- ggplot(StatePriceCut1[StatePriceCut1$RegionName == "Nevada" ,], aes(Date, PriceCut,
+                                 color = RegionName)) +
+  geom_point(alpha = 0.5) +
+  theme_minimal()
+
+ggplotly(g1)
+```
+
+```{r}
+g2 <- ggplot(StatePriceCut1, aes(Date, PriceCut,
+                                 color = RegionName)) +
+  geom_point(alpha = 0.5) +
+  theme_minimal() +
+  facet_wrap(~RegionName) +
+  theme(legend.position = "none")
+
+print(g2)
+```
+
+
+```{r}
+g3 <- ggplot(StateMedianSqft, aes(Date, ValuePerSqft,
+                                 color = RegionName)) +
+  geom_point(alpha = 0.5) +
+  theme_minimal() +
+  facet_wrap(~RegionName) +
+  theme(legend.position = "none")
+
+print(g3)
+```
+`
+o
+```{r}
+options(scipen = 999)
+```
+
+```{r}
+g4 <- ggplot(StateZHVI, aes(Date, ZHVI,
+                                 color = RegionName)) +
+  geom_point(alpha = 0.5) +
+  theme_minimal() +
+  facet_wrap(~RegionName) +
+  theme(legend.position = "none") 
+
+print(g4)
+```
+
+```{r}
+g6 <- ggplot(MetroZHVI[MetroZHVI$RegionNameState == "CA" ,], aes(Date, ZHVI,
+                                 color = RegionName)) +
+  geom_point(alpha = 0.5) +
+  theme_minimal() +
+  theme(legend.position = "none") +
+  facet_wrap(~RegionNameCity)
+
+print(g6)
+```
+
+```{r}
+g7 <- ggplot(MetroZHVI[MetroZHVI$RegionNameState == "TX" ,], aes(Date, ZHVI,
+                                 color = RegionName)) +
+  geom_point(alpha = 0.5) +
+  theme_minimal() +
+  theme(legend.position = "none") +
+  facet_wrap(~RegionNameCity)
+
+ggplotly(g7)
+```
+
+
+```{r}
+g8 <- ggplot(StateZHVI1bed, aes(Date, ZHVI,
+                                 color = RegionName)) +
+  geom_point(alpha = 0.5) +
+  theme_minimal() +
+  facet_wrap(~RegionName) +
+  theme(legend.position = "none")
+
+ggplotly(g8)
+```
+
+```{r}
+g9 <- ggplot(StateZHVI5bed, aes(Date, ZHVI,
+                                 color = RegionName)) +
+  geom_point(alpha = 0.5) +
+  theme_minimal() +
+  facet_wrap(~RegionName) +
+  theme(legend.position = "none")
+
+ggplotly(g9)
+```
