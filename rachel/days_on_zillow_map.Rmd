@@ -47,6 +47,17 @@ ggplotly(region_boxplot)
 ggplot(days_on_zillow, aes(year, days, group = year)) +
   geom_boxplot()
 ```
+
+```{r}
+ggplot(days_on_zillow, aes(month, days, group = month)) +
+  geom_boxplot()
+```
+```{r}
+ggplot(days_on_zillow, aes(month, days, group = month)) +
+  geom_boxplot() + 
+  facet_wrap(~region)
+ggplotly()
+```
 ```{r}
 p1 <- ggplot(days_on_zillow, aes(date, days, color = state_abb)) +
   geom_line() +

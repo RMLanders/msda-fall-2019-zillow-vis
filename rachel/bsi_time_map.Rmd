@@ -1,0 +1,122 @@
+---
+title: "bsi_map"
+author: "Rachel Landers"
+date: "9/21/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(dplyr)
+library(ggplot2)
+library(viridis)
+library(gganimate)
+library(ggthemes) # theme_maps() comes from here
+library(here)
+library(plotly)
+```
+```{r}
+regions <- tibble(state_abb = state.abb, region = state.region) %>% 
+  rbind(tibble(state_abb = "DC", region = "South"))
+```
+```{r}
+bsi <- readxl::read_excel(here::here("data", "prepped", "bsi_time_state.xlsx")) %>% 
+  mutate(date = as.Date(date)) %>% 
+  mutate(state_abb = state.abb[match(RegionName, tolower(state.name))]) %>% 
+  mutate(state_abb = replace(state_abb, RegionName == "district of columbia", "DC")) %>% 
+  inner_join(regions)
+tail(bsi)
+```
+
+
+```{r}
+summary(bsi)
+```
+```{r}
+n_distinct(bsi$date)
+```
+```{r}
+facetted_region_boxplot <- ggplot(bsi, aes(as.factor(year), bsi, group = year)) +
+  geom_boxplot() + 
+  facet_wrap(~region) +
+  labs(x = "Year", y = "Buyer-seller index") + 
+  theme_minimal()
+ggplotly(facetted_region_boxplot)
+ggsave("facetted_time_boxplot.png")
+```
+
+```{r}
+us_boxplot <- ggplot(bsi, aes(as.factor(year), bsi, group = year)) +
+  geom_boxplot() +
+  labs(x = "Year", y = "Buyer-seller index") +
+  theme_minimal()
+ggplotly(us_boxplot)
+ggsave("us_bsi_over_time.png")
+```
+```{r}
+all_time_region_boxplot <- ggplot(bsi, aes(region, bsi, group = region)) +
+  geom_boxplot() 
+ggplotly(all_time_region_boxplot)
+```
+```{r}
+all_time_region_boxplot <- ggplot(bsi, aes(month, bsi, group = month)) +
+  geom_boxplot() +
+  facet_wrap(~region)
+ggplotly(all_time_region_boxplot)
+```
+```{r}
+bsi_animate_boxplot <- ggplot(bsi, aes(region, bsi, group = region)) +
+  geom_boxplot() +
+  labs(title = '{round(frame_time)}') +
+  transition_time(date)
+animate(bsi_animate_boxplot)
+```
+
+```{r}
+current_region_boxplot <- ggplot(bsi %>% subset(date == as.Date('2019-08-01')), aes(region, bsi, group = region)) +
+  geom_boxplot()
+ggplotly(current_region_boxplot)
+```
+
+```{r}
+facetted_region_line_chart <- ggplot(bsi, aes(date, bsi, color = state_abb)) +
+  geom_line() +
+  facet_wrap(~region)
+ggplotly(facetted_region_line_chart)
+```
+```{r}
+all_states_line_chart <- ggplot(bsi, aes(date, bsi, color = state_abb)) +
+  geom_line() 
+ggplotly(all_states_line_chart)
+```
+
+```{r}
+bsi_geo_data <- bsi %>%
+  inner_join(map_data("state"), by = c("RegionName" = "region"))
+tail(bsi_geo_data)
+summarise(bsi_geo_data)
+```
+```{r}
+distinct(bsi_geo_data, bsi_geo_data$date)
+```
+
+```{r}
+bsi_time_map <- ggplot(data = bsi_geo_data, 
+             aes(x = long, 
+                 y = lat,
+                 fill = bsi,
+                 group = group),
+             color = "white") +
+    geom_polygon() +
+    coord_map(projection = "albers", lat0 = 39, lat1 = 45) +
+    transition_time(date) +
+    ease_aes('cubic-in-out') +
+    scale_fill_viridis_c(option = "plasma") + 
+    labs(title = 'Date: {frame_time}') +
+    theme_map()
+animate(bsi_time_map,
+        duration = 12) 
+anim_save("bsi_time.gif")
+```
+

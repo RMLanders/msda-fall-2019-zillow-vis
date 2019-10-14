@@ -37,20 +37,32 @@ summary(bsi)
 n_distinct(bsi$date)
 ```
 ```{r}
-facetted_region_boxplot <- ggplot(bsi, aes(year, bsi, group = year)) +
+facetted_region_boxplot <- ggplot(bsi, aes(as.factor(year), bsi, group = year)) +
   geom_boxplot() + 
-  facet_wrap(~region)
+  labs(x = "Year", y = "Buyer-seller index") +
+  facet_wrap(~region) +
+  theme_minimal()
 ggplotly(facetted_region_boxplot)
+ggsave("facetted_region_boxplot.png")
 ```
 
 ```{r}
-us_boxplot <- ggplot(bsi, aes(year, bsi, group = year)) +
+us_boxplot <- ggplot(bsi, aes(as.factor(year), bsi, group = year)) +
   geom_boxplot()
 ggplotly(us_boxplot)
 ```
 ```{r}
-all_time_region_boxplot <- ggplot(bsi, aes(region, bsi, group = year)) +
+all_time_region_boxplot <- ggplot(bsi, aes(region, bsi, group = region)) +
+  labs(x = "Region", y = "Buyer-seller index") +
+  geom_boxplot() + 
+  theme_minimal()
+ggplotly(all_time_region_boxplot)
+ggsave("boxplot_bsi_region_all_time.png")
+```
+```{r}
+all_time_region_boxplot <- ggplot(bsi, aes(month, bsi, group = month)) +
   geom_boxplot() +
+  facet_wrap(~region)
 ggplotly(all_time_region_boxplot)
 ```
 ```{r}
@@ -62,10 +74,11 @@ animate(bsi_animate_boxplot)
 ```
 
 ```{r}
-current_region_boxplot <- ggplot(bsi %>% subset(date == as.Date('2019-08-01')), aes(region, bsi, group = year)) +
+current_region_boxplot <- ggplot(bsi %>% subset(date == as.Date('2019-08-01')), aes(region, bsi, group = region)) +
   geom_boxplot()
 ggplotly(current_region_boxplot)
 ```
+
 ```{r}
 facetted_region_line_chart <- ggplot(bsi, aes(date, bsi, color = state_abb)) +
   geom_line() +
@@ -89,10 +102,10 @@ distinct(bsi_geo_data, bsi_geo_data$date)
 ```
 
 ```{r}
-bsi_map <- ggplot(data = bsi_geo_data, 
+bsi_region_map <- ggplot(data = bsi_geo_data, 
              aes(x = long, 
                  y = lat,
-                 fill = days,
+                 fill = bsi,
                  group = group),
              color = "white") +
     geom_polygon() +
@@ -100,16 +113,9 @@ bsi_map <- ggplot(data = bsi_geo_data,
     transition_time(date) +
     ease_aes('cubic-in-out') +
     scale_fill_viridis_c(option = "plasma") + 
-    labs(title = 'Date: {round(frame_time, 0)}') +
+    labs(title = 'Date: {frame_time}') +
   theme_map()
-```
-```{r}
-animate(bsi_map,
-        duration = 100) 
-
-```
-
-
-```{r}
-anim_save("bsi.gif")
+animate(bsi_region_map,
+        duration = 50) 
+anim_save("bsi_region.gif")
 ```
